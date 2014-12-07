@@ -30,8 +30,8 @@ public class ATM {
                 return false;
             } else
                 CardInserted = card;
-        }
-        catch (NullPointerException e){System.err.println("Check your PIN & whether your card is active");}
+        }finally {}
+        //catch (NullPointerException e){System.err.println("Check your PIN & whether your card is active");}
          //       throw new UnsupportedOperationException("Check your PIN & whether your card is active");
          //catch (UnsupportedOperationException e){System.err.println("Check your PIN & whether your card is active");};
          //throw new UnsupportedOperationException("Not yet implemented");

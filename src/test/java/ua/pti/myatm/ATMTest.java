@@ -17,6 +17,20 @@ import static org.mockito.Mockito.*;
  */
 public class ATMTest {
 
+    //Мы не можем получить саму карту по-этому проверяем пин и статус
+    @Test
+    public void testInsertCardIntoATM(){
+        System.out.println("Insertion card into ATM");
+        Card mockedcard = mock(Card.class);
+        when(mockedcard.checkPin(1234)).thenReturn(true);
+        when(mockedcard.isBlocked()).thenReturn(false);
+        ATM atm = new ATM();
+        atm.insertCard(mockedcard);
+        boolean expResult = true;
+        boolean result = atm.validateCard(mockedcard, 1234);
+        assertEquals(expResult, result);
+    }
+
     @Test
     public void testGetMoneyInATM() {
         System.out.println("Get Money In ATM Where MoneyAmount = 1000");
@@ -48,6 +62,27 @@ public class ATMTest {
     }
 
     @Test
+    public void testValidateBlockedCard() {
+        System.out.println("Validate Blocked Card");
+        Card mockedcard = mock(Card.class);
+        when(mockedcard.checkPin(1234)).thenReturn(true);
+        when(mockedcard.isBlocked()).thenReturn(true);
+        int pinCode = 1234;
+        ATM atm = new ATM();
+        boolean expResult = false;
+        boolean result = atm.validateCard(mockedcard, pinCode);
+        assertEquals(expResult, result);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testValidateCardWithNocardInitialized() {
+        System.out.println("Validate Card With No Card Initialized");
+        Card card = null;;
+        ATM atm = new ATM();
+        boolean result = atm.validateCard(card, 1234);
+    }
+
+    @Test
     public void testValidateCardWithCorrectPinAndCardUnlocked() {
         System.out.println("Validate Card With Valid Pin Card & Card Is Not Blocked");
         Card mockedcard = mock(Card.class);
@@ -74,8 +109,8 @@ public class ATMTest {
     }
 
     @Test(expected = NullPointerException.class )
-    public void testCheckBalance() {
-        System.out.println("checkBalance");
+    public void testCheckBalanceWithNoCardInserted() {
+        System.out.println("Check Balance With No Card Inserted");
         ATM atm = new ATM();
         double expResult = 0.0;
         double result = atm.checkBalance();

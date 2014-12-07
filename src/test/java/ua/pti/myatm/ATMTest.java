@@ -11,7 +11,7 @@ import static org.mockito.Mockito.*;
 
 /**
  *
- * @author andrii
+ * @author KaNU
  */
 public class ATMTest {
 

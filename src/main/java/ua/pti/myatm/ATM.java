@@ -25,6 +25,7 @@ public class ATM {
     //Если неправильный пин-код или карточка заблокирована, возвращаем false. При этом, вызов всех последующих методов у ATM с данной картой должен генерировать исключение NoCardInserted
     public boolean validateCard(Card card, int pinCode){
         try {
+
             if (card.isBlocked() || !card.checkPin(pinCode)) {
                 return false;
             } else

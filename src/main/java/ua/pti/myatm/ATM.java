@@ -43,9 +43,9 @@ public class ATM {
         try {
             Account acc = CardInserted.getAccount();
             return acc.getBalance();
-        }
-        catch (NullPointerException e){System.err.println("There is no card inserted in ATM");}
-        return 0;
+        }finally {}
+        //catch (NullPointerException e){System.err.println("There is no card inserted in ATM");}
+        //return 0;
         //throw new UnsupportedOperationException("Not yet implemented");
     }
     
@@ -67,10 +67,10 @@ public class ATM {
             }
             else
                 throw new UnsupportedOperationException("NotEnoughMoneyInATM");
-        }
-        catch (NullPointerException e){System.err.println("There is no card inserted in ATM");}
-        catch (UnsupportedOperationException e){System.err.println(e);}
-        return 0;
+        }finally {}
+        //catch (NullPointerException e){System.err.println("There is no card inserted in ATM");}
+        //catch (UnsupportedOperationException e){System.err.println(e);}
+        //return 0;
         //throw new UnsupportedOperationException("Not yet implemented");
     }
 }

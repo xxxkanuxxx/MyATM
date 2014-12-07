@@ -72,7 +72,7 @@ public class ATMTest {
         boolean result = atm.validateCard(mockedcard, pinCode);
         assertEquals(expResult, result);
     }
-/*
+
     @Test(expected = NullPointerException.class )
     public void testCheckBalance() {
         System.out.println("checkBalance");
@@ -81,7 +81,7 @@ public class ATMTest {
         double result = atm.checkBalance();
         assertEquals(expResult, result, 0.0);
     }
-*/
+
     @Test
     public void testCheckBalanceWithCardInserted() {
         System.out.println("Check Balance With Card Inserted");
@@ -111,7 +111,7 @@ public class ATMTest {
         double result = atm.getCash(amount);
         assertEquals(expResult, result, 0.0);
     }
-/*
+
     @Test(expected = UnsupportedOperationException.class)
      public void testGetCashNotenoughMoneyInATMException() {
         System.out.println("getCash with not enough money in ATM");
@@ -144,9 +144,4 @@ public class ATMTest {
         //assertEquals(expResult, result, 0.0);
     }
 
-    @Test(expected = ArithmeticException.class)
-    public void test() {
-        int a = 1/0;
-    }
-*/
 }

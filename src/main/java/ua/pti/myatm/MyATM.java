@@ -8,7 +8,7 @@ public class MyATM {
         System.out.print("\n"+atm.getMoneyInATM()+"\n");
         //Card card = null;
         //atm.validateCard(card, 1234);
-        atm.checkBalance();
+        //atm.checkBalance();
         //atm.getCash(999.99);
     }
 }

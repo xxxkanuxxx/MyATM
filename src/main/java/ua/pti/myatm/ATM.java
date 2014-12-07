@@ -4,6 +4,12 @@ public class ATM {
     private double MoneyAmount=0;
     private Card CardInserted;
 
+    ATM(){}
+
+    public void insertCard(Card CardIn){
+        CardInserted = CardIn;
+    }
+
     //Можно задавать количество денег в банкомате 
     ATM(double moneyInATM){
          MoneyAmount += moneyInATM;

@@ -6,6 +6,7 @@
 package ua.pti.myatm;
 
 import org.junit.Test;
+import org.mockito.InOrder;
 import org.mockito.internal.matchers.Null;
 
 import static org.junit.Assert.*;
@@ -116,23 +117,33 @@ public class ATMTest {
     }
 
     @Test
-    public void testValidateCardForCheckingPIN() throws NoCardInserted{
-        System.out.println("Validate Card With Uncorrect Pin");
+    public void testValidateCardIsThereCheckingPIN() throws NoCardInserted{
+        System.out.println("Validate Card for existing card PIN check");
         Card mockedcard = mock(Card.class);
         when(mockedcard.checkPin(1234)).thenReturn(false);
         when(mockedcard.isBlocked()).thenReturn(false);
         int pinCode = 1234;
         ATM atm = new ATM();
-        boolean expResult = false;
         boolean result = atm.validateCard(mockedcard,pinCode);
-        assertEquals(expResult, result);
+        verify(mockedcard, atLeastOnce()).checkPin(pinCode);
+    }
+
+    @Test
+    public void testValidateCardIsThereCheckingIsCardBlocked() throws NoCardInserted{
+        System.out.println("Validate Card for existing card block check");
+        Card mockedcard = mock(Card.class);
+        when(mockedcard.checkPin(1234)).thenReturn(false);
+        when(mockedcard.isBlocked()).thenReturn(false);
+        int pinCode = 1234;
+        ATM atm = new ATM();
+        boolean result = atm.validateCard(mockedcard,pinCode);
+        verify(mockedcard, atLeastOnce()).isBlocked();
     }
 
     @Test(expected = NoCardInserted.class )
     public void testCheckBalanceWithNoCardInserted() throws NoCardInserted {
         System.out.println("Check Balance With No Card Inserted");
         ATM atm = new ATM();
-        double expResult = 0.0;
         double result = atm.checkBalance();
     }
 
@@ -195,6 +206,52 @@ public class ATMTest {
         double amount = 1600.0;
         ATM atm = new ATM(2000);
         boolean t = atm.validateCard(mockedcard,1234);
+        double result = atm.getCash(amount);
+    }
+
+    @Test
+    public void testGetCashCheckingOrderOfMethods() throws NegativeAmount, NotEnoughMoneyInATM, NoCardInserted, NotEnoughMoneyInAccount {
+        System.out.println("Get Cash test for right order of methods");
+        Card mockedcard = mock(Card.class);
+        Account cardaccount = mock(Account.class);
+        when(mockedcard.isBlocked()).thenReturn(false);
+        when(mockedcard.checkPin(1234)).thenReturn(true);
+        when(mockedcard.getAccount()).thenReturn(cardaccount);
+        when(cardaccount.getBalance()).thenReturn(1500.0);
+        when(cardaccount.withdrow(1000)).thenReturn(1000.0);
+        double amount = 1000.0;
+        ATM atm = new ATM(2000);
+        boolean t = atm.validateCard(mockedcard,1234);
+        double result = atm.getCash(amount);
+        InOrder inOrder = inOrder(mockedcard, cardaccount);
+        inOrder.verify(mockedcard).getAccount();
+        inOrder.verify(cardaccount).getBalance();
+        inOrder.verify(cardaccount).withdrow(1000);
+    }
+
+    @Test
+    public void testGetCashWithAmountEquelsATMandAccountamounts() throws NegativeAmount, NotEnoughMoneyInATM, NoCardInserted, NotEnoughMoneyInAccount {
+        System.out.println("Get Cash with exact same amount in ATM and card account");
+        Card mockedcard = mock(Card.class);
+        Account cardaccount = mock(Account.class);
+        when(mockedcard.isBlocked()).thenReturn(false);
+        when(mockedcard.checkPin(1234)).thenReturn(true);
+        when(mockedcard.getAccount()).thenReturn(cardaccount);
+        when(cardaccount.getBalance()).thenReturn(1500.0);
+        when(cardaccount.withdrow(1500)).thenReturn(1500.0);
+        double amount = 1500.0;
+        ATM atm = new ATM(1500);
+        boolean t = atm.validateCard(mockedcard,1234);
+        double expResult = 1500.0;
+        double result = atm.getCash(amount);
+        assertEquals(expResult, result, 0.0);
+    }
+
+    @Test(expected = NoCardInserted.class)
+    public void testGetCashWithNoCardInserted() throws NegativeAmount, NotEnoughMoneyInATM, NoCardInserted, NotEnoughMoneyInAccount {
+        System.out.println("Get Cash With Not Enough Money On Account");
+        ATM atm = new ATM(1000);
+        double amount = 1000;
         double result = atm.getCash(amount);
     }
 

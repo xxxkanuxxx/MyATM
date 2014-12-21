@@ -1,53 +1,53 @@
 package ua.pti.myatm;
 
 public class ATM {
-    private double MoneyAmount=0;
-    private Card CardInserted;
+    private double moneyAmount =0;
+    private Card cardInserted;
+    private boolean isCardIn = false;
 
     ATM(){}
 
-    public void insertCard(Card CardIn){
-        CardInserted = CardIn;
-    }
-
-    //Можно задавать количество денег в банкомате 
-    ATM(double moneyInATM){
-         MoneyAmount += moneyInATM;
+    //Задать количество денег в банкомате
+    ATM(double moneyInATM) throws NegativeAmount {
+        if (moneyInATM >= 0)
+            moneyAmount = moneyInATM;
+        else
+            throw new NegativeAmount("You can't set ATM with negative amount");
     }
 
     // Возвращает каоличестов денег в банкомате
     public double getMoneyInATM() {
-         return MoneyAmount;
+         return moneyAmount;
     }
         
     //С вызова данного метода начинается работа с картой
-    //Метод принимает карту и пин-код, проверяет пин-код карты и не заблокирована ли она
+    //Метод принимает аргументом пин-код, проверяет пин-код карты и не заблокирована ли она
     //Если неправильный пин-код или карточка заблокирована, возвращаем false. При этом, вызов всех последующих методов у ATM с данной картой должен генерировать исключение NoCardInserted
-    public boolean validateCard(Card card, int pinCode){
+    public boolean validateCard(Card card, int pinCode) throws NoCardInserted {
         try {
-
-            if (card.isBlocked() || !card.checkPin(pinCode)) {
+            cardInserted = card;
+            isCardIn = true;
+            if (cardInserted.isBlocked() || !cardInserted.checkPin(pinCode)) {
                 return false;
-            } else
-                CardInserted = card;
-        }finally {}
-        //catch (NullPointerException e){System.err.println("Check your PIN & whether your card is active");}
-         //       throw new UnsupportedOperationException("Check your PIN & whether your card is active");
-         //catch (UnsupportedOperationException e){System.err.println("Check your PIN & whether your card is active");};
-         //throw new UnsupportedOperationException("Not yet implemented");
-        return true;
+            }
+            else {
+                return true;
+            }
+        }
+        catch (NullPointerException e){
+            throw new NoCardInserted("Insert card, please");
+        }
     }
     
     //Возвращает сколько денег есть на счету
-    public double checkBalance(){
+    public double checkBalance() throws NoCardInserted {
         try {
-            Account acc = CardInserted.getAccount();
+            Account acc = cardInserted.getAccount();
             return acc.getBalance();
-        }finally {}
-        //catch (NullPointerException e){System.err.println("There is no card inserted in ATM");}
-        //return 0;
-        //throw new UnsupportedOperationException("Not yet implemented");
+        }
+        catch (NullPointerException e){throw new NoCardInserted("There is no card in ATM");}
     }
+
     
     //Метод для снятия указанной суммы
     //Метод возвращает сумму, которая у клиента осталась на счету после снятия
@@ -55,22 +55,22 @@ public class ATM {
     //Если недостаточно денег на счете, то должно генерироваться исключение NotEnoughMoneyInAccount 
     //Если недостаточно денег в банкомате, то должно генерироваться исключение NotEnoughMoneyInATM 
     //При успешном снятии денег, указанная сумма должна списываться со счета, и в банкомате должно уменьшаться количество денег
-    public double getCash(double amount){
+    public double getCash(double amount) throws NoCardInserted, NotEnoughMoneyInATM, NotEnoughMoneyInAccount {
         try {
-            Account acc = CardInserted.getAccount();
-            if (amount < MoneyAmount){
-                if (amount < acc.getBalance()){
-                    MoneyAmount -= acc.withdrow(amount);
-                    return amount;
+            Account acc = cardInserted.getAccount();
+            if (amount <= moneyAmount) {
+                if (amount < acc.getBalance()) {
+                    moneyAmount -= acc.withdrow(amount);
+                    return acc.getBalance();
                 }
-                else throw new UnsupportedOperationException("NotEnoughMoneyInAccount");
+                else throw new NotEnoughMoneyInAccount("There is not enough money on your account");
             }
-            else
-                throw new UnsupportedOperationException("NotEnoughMoneyInATM");
-        }finally {}
-        //catch (NullPointerException e){System.err.println("There is no card inserted in ATM");}
-        //catch (UnsupportedOperationException e){System.err.println(e);}
-        //return 0;
-        //throw new UnsupportedOperationException("Not yet implemented");
+            else {
+                throw new NotEnoughMoneyInATM("There is not enough money in ATM");
+            }
+            }
+            catch (NullPointerException e){
+            throw new NoCardInserted("There is no card in ATM");
+        }
     }
 }

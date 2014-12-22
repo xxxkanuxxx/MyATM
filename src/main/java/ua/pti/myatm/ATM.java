@@ -4,6 +4,8 @@ public class ATM {
     private double moneyAmount =0;
     private Card cardInserted;
     private boolean isCardIn = false;
+    private int tries = 0;
+    private int cardID = 0;
 
     ATM(){}
 
@@ -27,9 +29,19 @@ public class ATM {
         try {
             cardInserted = card;
             isCardIn = true;
+
+            if (cardID != card.getCardID()) {
+                tries = 0;
+                cardID = card.getCardID();
+            }
+
             if (cardInserted.isBlocked() || !cardInserted.checkPin(pinCode)) {
+                tries += 1;
+                if (tries >= 3)
+                    card.block();
                 return false;
             }
+
             else {
                 return true;
             }

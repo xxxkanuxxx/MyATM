@@ -255,4 +255,52 @@ public class ATMTest {
         double result = atm.getCash(amount);
     }
 
+    @Test
+    public void testValidateCardWithTripleUncorectPIN() throws NoCardInserted {
+        System.out.println("Validation card in ATM");
+        Card mockedcard = mock(Card.class);
+        when(mockedcard.checkPin(1111)).thenReturn(false);
+        when(mockedcard.isBlocked()).thenReturn(false);
+        ATM atm = new ATM();
+        boolean result = atm.validateCard(mockedcard,1111);
+        result = atm.validateCard(mockedcard,1111);
+        result = atm.validateCard(mockedcard,1111);
+        verify(mockedcard, atLeastOnce()).block();
+    }
+
+    @Test
+    public void testValidateCardWithUncorectPINFiveTimes() throws NoCardInserted {
+        System.out.println("Validation card in ATM");
+        Card mockedcard = mock(Card.class);
+        when(mockedcard.checkPin(1111)).thenReturn(false);
+        when(mockedcard.isBlocked()).thenReturn(false);
+        ATM atm = new ATM();
+        boolean result = atm.validateCard(mockedcard,1111);
+        result = atm.validateCard(mockedcard,1111);
+        result = atm.validateCard(mockedcard,1111);
+        result = atm.validateCard(mockedcard,1111);
+        result = atm.validateCard(mockedcard,1111);
+        verify(mockedcard, atLeastOnce()).block();
+    }
+
+    @Test
+    public void testValidateCardWithUncorectPINTwoTimesWithUncorrectPIN() throws NoCardInserted {
+        System.out.println("Validation card in ATM");
+        Card mockedcard = mock(Card.class);
+        Card elsecard = mock(Card.class);
+        when(mockedcard.checkPin(1111)).thenReturn(false);
+        when(mockedcard.isBlocked()).thenReturn(false);
+        when(mockedcard.getCardID()).thenReturn(1);
+        when(elsecard.checkPin(1111)).thenReturn(false);
+        when(elsecard.isBlocked()).thenReturn(false);
+        when(elsecard.getCardID()).thenReturn(2);
+        ATM atm = new ATM();
+        boolean result = atm.validateCard(mockedcard,1111);
+        result = atm.validateCard(mockedcard,1111);
+        result = atm.validateCard(elsecard,1111);
+        result = atm.validateCard(elsecard,1111);
+        verify(mockedcard, never()).block();
+        verify(elsecard, never()).block();
+    }
+
 }
